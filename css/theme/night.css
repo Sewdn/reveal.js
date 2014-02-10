@@ -134,3 +134,10 @@ body {
  *********************************************/
 .reveal .slide-number {
   color: #e7ad52; }
+
+.rni .reveal {
+  color: black; }
+  .rni .reveal h1, .rni .reveal h2, .rni .reveal h3, .rni .reveal h4, .rni .reveal h5, .rni .reveal h6, .rni .reveal a {
+    color: #ff4c4c; }
+  .rni .reveal a {
+    text-decoration: underline; }

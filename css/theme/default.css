@@ -26,7 +26,7 @@ body {
 
 .reveal {
   font-family: "Lato", sans-serif;
-  font-size: 36px;
+  font-size: 48px;
   font-weight: normal;
   letter-spacing: -0.02em;
   color: #eeeeee; }
@@ -146,3 +146,10 @@ body {
  *********************************************/
 .reveal .slide-number {
   color: #13daec; }
+
+.rni .reveal {
+  color: black; }
+  .rni .reveal h1, .rni .reveal h2, .rni .reveal h3, .rni .reveal h4, .rni .reveal h5, .rni .reveal h6, .rni .reveal a {
+    color: #ff4c4c; }
+  .rni .reveal a {
+    text-decoration: underline; }
