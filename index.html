@@ -216,6 +216,25 @@ All apps share common logic, but each need their own build.
 <section>
 <section data-markdown>
 <script type="text/template">
+# Avoiding those pitfalls
+### Our best practices and design patterns developing PokerBundle with meteor.
+</script>
+</section>
+<section data-markdown>
+<script type="text/template">
+## 1. Packages
+## 2. Namespacing
+## 3. Transform Classes
+## 4. Common Validation Logic
+## 5. Behaviour Patterns
+</script>
+</section>
+</section>
+
+<section>
+<section data-markdown>
+<script type="text/template">
+# 1
 # Packages!
 </script>
 </section>
@@ -269,6 +288,7 @@ Imply all of the packages you need.
 <section>
 <section data-markdown>
 <script type="text/template">
+# 2
 # Namespacing namespacing namespacing
 </script>
 </section>
@@ -437,6 +457,7 @@ Package.on_use(function (api, where) {
 <section>
 <section data-markdown>
 <script type="text/template">
+# 3
 # transform classes
 </script>
 </section>
@@ -521,6 +542,7 @@ if(selecedTable.isSelected()){
 <section>
 <section data-markdown>
 <script type="text/template">
+# 4
 # common validation logic
 </script>
 </section>
@@ -660,6 +682,7 @@ Meteor.methods({
 <section>
 <section data-markdown>
 <script type="text/template">
+# 5
 # behaviour patterns
 ### a nice way to implement frequently used data manipulations
 </script>
@@ -704,7 +727,7 @@ test.trackable(['field1', 'field2']);
 <section>
 <section data-markdown>
 <script type="text/template">
-# That's all folks
+# Thanks!
 </script>
 </section>
 </section>
