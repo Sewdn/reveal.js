@@ -153,3 +153,10 @@ body {
     color: #ff4c4c; }
   .rni .reveal a {
     text-decoration: underline; }
+
+.pb .reveal {
+  color: white; }
+  .pb .reveal h1, .pb .reveal h2, .pb .reveal h3, .pb .reveal h4, .pb .reveal h5, .pb .reveal h6, .pb .reveal a {
+    color: white; }
+  .pb .reveal a {
+    text-decoration: underline; }
