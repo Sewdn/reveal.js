@@ -1,0 +1,705 @@
+<!doctype html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8">
+
+    <title>Building large scale meteor apps: how we are doing it.</title>
+
+    <meta name="description" content="A framework for easily creating beautiful presentations using HTML">
+    <meta name="author" content="Hakim El Hattab">
+
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <link rel="stylesheet" href="css/reveal.min.css">
+    <link rel="stylesheet" href="css/theme/moon.css" id="theme">
+
+    <!-- For syntax highlighting -->
+    <link rel="stylesheet" href="lib/css/zenburn.css">
+
+    <!--link rel="stylesheet" href="/lib/css/pojoaque.css">
+    <script src="/lib/js/highlight.pack.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script-->
+
+    <!-- If the query includes 'print-pdf', use the PDF print sheet -->
+    <script>
+      document.write( '<link rel="stylesheet" href="css/print/' + ( window.location.search.match( /print-pdf/gi ) ? 'pdf' : 'paper' ) + '.css" type="text/css" media="print">' );
+    </script>
+
+    <!--[if lt IE 9]>
+    <script src="lib/js/html5shiv.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+
+    <div class="reveal">
+
+      <!-- Any section element inside of this container is displayed as a slide -->
+      <div class="slides">
+        <section>
+          <h1>Building large scale meteor apps</h1>
+          <br/><br/>
+          <h3>How <i>we</i> are doing it</h3>
+          <br/><br/>
+          <p>http://meteor.redandivory.com/</p>
+          <p>
+            <small>Created by <a href="http://redandivory.com">Pieter Soudan</a> / <a href="http://twitter.com/sewdn">@Sewdn</a></small>
+            <br/>
+            <small>Presented 11th of february 2014 on <a href="http://www.meetup.com/Meteor-Antwerp/events/162813252/">Meteor Meetup Antwerp</a></small>
+          </p>
+        </section>
+
+<section>
+<section data-markdown>
+<script type="text/template">
+# Common pitfalls
+## when developing large scale web-apps
+</script>
+</section>
+<section data-markdown>
+<script type="text/template">
+## load order issues
+Its hard to know in what order your code will load (or build).
+
+The only control is a cumbersome convention in naming your folders & files.
+</script>
+</section>
+<section data-markdown>
+<script type="text/template">
+## dependency management
+when all of your code lives in the app-space, it is impossible to express dependencies.
+</script>
+</section>
+<section data-markdown>
+<script type="text/template">
+## global namespace conflicts
+meteor adds lots of principles in the global namespace. Beware.
+
+(template names, method names, session variables, ...)
+</script>
+</section>
+<section data-markdown>
+<script type="text/template">
+## Code spaghetti
+You get lots of freedom developing meteor apps. Beware.
+
+There is no default app-structure.
+</script>
+</section>
+</section>
+
+<section data-background="#63C7CE" data-state="pb">
+<section data-markdown>
+<script type="text/template">
+# Intermezzo: PokerBundle
+## Saas platform for the live poker industry
+</script>
+</section>
+<section data-markdown>
+<script type="text/template">
+## In development for the past 4 months.
+I will not be demoing. But all of of the code examples originate from this app.
+</script>
+</section>
+<section data-markdown>
+<script type="text/template">
+## Our largest meteor app so far
+Actually it is a bundle made out of several apps (all very realtime)...
+
+ - poker clock
+ - player-app
+ - tournament director
+ - public website
+ - bar-app
+ - ...
+
+All apps share common logic, but each need their own build.
+</script>
+</section>
+</section>
+
+<section>
+<section data-markdown>
+<script type="text/template">
+# Avoiding those pitfalls
+### Our best practices and design patterns developing PokerBundle with meteor.
+</script>
+</section>
+<section data-markdown>
+<script type="text/template">
+## 1. Packages
+## 2. Namespacing
+## 3. Transform Classes
+## 4. Common Validation Logic
+## 5. Behaviour Patterns
+</script>
+</section>
+</section>
+
+<section>
+<section data-markdown>
+<script type="text/template">
+# 1
+# Packages!
+</script>
+</section>
+<section data-markdown>
+<script type="text/template">
+## Move =ALL= your code to packages
+
+not only for 3rd party release
+
+Every logical unit deserves its own package.
+</script>
+</section>
+<section data-markdown>
+<script type="text/template">
+## Better code
+by building packages you end up writing cleaner DRY code, that is more reusable.
+</script>
+</section>
+<section data-markdown>
+<script type="text/template">
+## Dependency insights
+You declare all of your dependencies inside a package
+</script>
+</section>
+<section data-markdown>
+<script type="text/template">
+## Load order control
+You have much better control of load (and build) order
+</script>
+</section>
+<section data-markdown>
+<script type="text/template">
+## Write tests for all bundle logic in a package.
+More containable testing,  if you test per package.
+</script>
+</section>
+
+<section data-markdown>
+<script type="text/template">
+## Umbrella packages
+Declare all of your app dependencies with a single package.
+
+Imply all of the packages you need.
+
+<a href="#/6/8">See example</a> at the end of this presentation.
+</script>
+</section>
+
+</section>
+
+<section>
+<section data-markdown>
+<script type="text/template">
+# 2
+# Namespacing namespacing namespacing
+</script>
+</section>
+
+<section data-markdown>
+<script type="text/template">
+## avoid global namespace
+rather add an app-namespace
+</script>
+</section>
+
+<section data-markdown>
+<script type="text/template">
+## Use a namespace per package
+add the app namespace as a prefix to every app-specific package folder
+</script>
+</section>
+
+<section data-markdown>
+<script type="text/template">
+packages/pb/namespaces.js
+
+```javascript
+PB = {};
+Handlebars.registerHelper("PB", function() {
+  return PB;
+});
+```
+
+packages/pb-room/namespaces.js
+
+```javascript
+PB.Room = {};
+PB.Room.Table = {};
+```
+
+packages/pb/package.js
+
+```javascript
+Package.describe({
+  summary: "PB Common Package"
+});
+
+Package.on_use(function (api, where) {
+  api.add_files([
+    "namespaces.js",
+  ], ['client', 'server']);
+  ...
+  api.export("PB", cs);
+});
+```
+
+</script>
+</section>
+
+<section>
+<img src="images/app-packages.png" alt="Meny" />
+</section>
+
+<section data-markdown>
+<script type="text/template">
+## respect these app-package namespaces
+- in all your template names
+- in all your global helper names
+- in all your method names
+- in all your session variables
+</script>
+</section>
+
+<section data-markdown>
+<script type="text/template">
+```html
+<template name="pbRoomTableActions">
+  ...
+</template>
+```
+
+```javascript
+Handlebars.registerHelper("pbRoomTableCustomHelper", function (){
+  return Session.get('pbRoomTableCustomSessionVariable');
+});
+```
+
+```javascript
+Meteor.methods({
+  pbRoomTableCreate: function(roomId, name) {
+    ...
+  }
+});
+```
+</script>
+</section>
+
+<section data-markdown>
+<script type="text/template">
+# Too verbose?
+## add wrapper methods to wrap the global meteor functions
+```javascript
+PB.Room.Table.breakUp = PB.wrapMethod('pbRoomTableBreakUp');
+
+Template.pbRoomTableActions.events ({
+  'click .breakup': function(e,t){
+    PB.Room.Table.breakUp(this._id);
+ }
+});
+```
+</script>
+</section>
+
+<section data-markdown>
+<script type="text/template">
+## Umbrella packages
+
+pb-app-td/package.js
+```javascript
+Package.describe({
+  summary: "PB TD dependencies"
+});
+
+Package.on_use(function (api, where) {
+  api.imply([
+    'pb-app-player',
+    'pb-event-mgmt'
+  ], ['client', 'server']);
+});
+```
+</script>
+</section>
+
+<section data-markdown>
+<script type="text/template">
+
+pb-app-player/package.js
+```javascript
+Package.describe({
+  summary: "PB Player App dependencies"
+});
+
+Package.on_use(function (api, where) {
+  api.imply([
+    'pb-app',
+    'pb-profile',
+    'pb-room',
+    'pb-event',
+  ], ['client', 'server']);
+});
+```
+pb-app/package.js
+```javascript
+Package.describe({
+  summary: "PB App - abstract package for all PB apps"
+});
+
+Package.on_use(function (api, where) {
+  api.imply([
+    'rwa',
+    'pb-common'
+  ], ['client', 'server']);
+});
+```
+
+</script>
+</section>
+</section>
+
+<section>
+<section data-markdown>
+<script type="text/template">
+# 3
+# transform classes
+</script>
+</section>
+<section data-markdown>
+<script type="text/template">
+## avoid complete ORMs
+- but add common business logic next to your data
+- this way you avoid adding business logic in templates
+</script>
+</section>
+<section data-markdown>
+<script type="text/template">
+```javascript
+PB.Room.Table.model = new Meteor.Collection("pbRoomTables", {
+  transform: function (doc) { return new Table(doc); }
+});
+Table = function (doc) {
+  _.extend(this, doc);
+};
+_.extend(Table.prototype, {
+  availableSeats: function() {
+    return _.filter(this.seats, function(r){
+      return r.available && r.enabled;
+    });
+  }
+}
+```
+</script>
+</section>
+<section data-markdown>
+<script type="text/template">
+## add common logic to all of your model classes
+example: get current active (selected) document in a collection
+```javascript
+PB.constructSelector('Room.Table', Table.prototype, PB.Room.Table.model)
+PB.constructSelector = function(ns, proto, collection) {
+  constructGetter(ns, proto, collection);
+  _.extend(proto, {
+    select: function() {
+      return PB[ns].select(this._id);
+    },
+    isSelected: function() {
+      return PB[ns].isSelected(this._id);
+    },
+    unSelect: function() {
+      return PB[ns].unSelect();
+    }
+  });
+  PB[ns].select = function(id) {
+    Session.set('pb' + ns + 'Selected', id);
+  };
+  PB[ns].isSelected = function(id) {
+    return Session.equals('pb' + ns + 'Selected', id);
+  };
+  PB[ns].unSelect = function() {
+   Session.set('pb' + ns + 'Selected', null);
+  };
+};
+```
+</script>
+</section>
+<section data-markdown>
+<script type="text/template">
+```javascript
+var selectedTable = PB.Room.Table.selected();
+if(selecedTable.isSelected()){
+  ...
+}
+```
+
+```html
+{{with PB.Room.selected}}
+  {{#each getTables}}
+    {{name}} {{#if isSelected}}(active){{/if}}
+  {{/each}}
+{{/with}}
+```
+</script>
+</section>
+</section>
+
+<section>
+<section data-markdown>
+<script type="text/template">
+# 4
+# common validation logic
+</script>
+</section>
+<section data-markdown>
+<script type="text/template">
+## make validation available everywhere
+- in client & server logic
+- in templates & methods
+</script>
+</section>
+<section data-markdown>
+<script type="text/template">
+- add validation namespace
+- add module validators
+- throw Meteor errors if invalid
+- return valid data if valid
+
+```javascript
+PB.Room.Table.validate = {};
+
+PB.Room.Table.validate.breakUp = function(tableId) {
+  var valid = {};
+
+  if(! tableId)
+    throw new Meteor.Error(403, "tableId not set");
+
+  var table = Tables.findOne({_id: tableId});
+  if(! table)
+    throw new Meteor.Error(403, "table not found");
+
+  _.extend(valid, {table: table});
+
+  if(!valid.table.isEmpty())
+    throw new Meteor.Error(403, "table not empty");
+
+  return valid;
+};
+//add validation helpers to model class
+PB.constructCan(PB.Room.Table, Table.prototype);
+```
+</script>
+</section>
+<section data-markdown>
+<script type="text/template">
+general method to add 'can-wrappers' to model classes for each validator
+
+```javascript
+PB.constructCan = function(ns, proto){
+  var cans = false;
+  if(proto){
+    cans = {};
+  }
+  if(!ns.can)
+    ns.can = {};
+  _.each(_.keys(ns.validate), function(key){
+    ns.can[key] = function(){
+      try {
+        ns.validate[key].apply(this, arguments);
+      } catch(e){
+        return false;
+      }
+      return true;
+    };
+    if(cans){
+      cans['can'+capitaliseFirstLetter(key)] = function() {
+        return ns.can[key](this);
+      };
+    }
+  });
+  if(cans){
+    _.extend(proto, cans);
+  }
+};
+```
+</script>
+</section>
+<section data-markdown>
+<script type="text/template">
+Resulting in this (template independent) clean code :)
+
+```html
+<template name="pbRoomTableActions">
+{{#with PB.Room.Table.selected}}
+  {{#if canBreakUp}}
+    <a class="button breakup">break-up</a>
+  {{else}}
+    {#if canUnSeat}}
+        <a class="button unSeat">unseat</a>
+    {{/if}}
+    {{#if canUnAssign}}
+        <a class="button unAssign">unassign</a>
+    {{/if}}
+  {{/if}}
+{{/with}}
+</template>
+```
+```javascript
+Template.pbRoomTableActions.events ({
+  'click .breakup': function(e,t){
+    PB.Room.Table.breakUp(this._id);
+  },
+  'click .unAssign': function(e,t){
+    PB.Room.Table.unAssign(this._id);
+  },
+  'click .unSeat': function(e,t){
+    PB.Room.Table.unSeat(this._id);
+  }
+});
+```
+</script>
+</section>
+
+<section data-markdown>
+<script type="text/template">
+```javascript
+…
+PB.Room.Table.breakUp = PB.wrapMethod('pbRoomTableBreakUp');
+…
+
+Meteor.methods({
+  ...
+  pbRoomTableBreakUp: function (tableId){
+    var valid = PB.Room.Table.validate.breakUp(tableId);
+    …
+    Tables.update({_id: valid.table._id}, {$set: {seats: defaultSeating}});
+    …
+  },
+  …
+});
+
+```
+</script>
+</section>
+
+</section>
+
+<section>
+<section data-markdown>
+<script type="text/template">
+# 5
+# behaviour patterns
+### a nice way to implement frequently used data manipulations
+</script>
+</section>
+<section data-markdown>
+<script type="text/template">
+## on atmosphere
+https://atmosphere.meteor.com/package/collection-behaviours
+```bash
+$ mrt install collection-behaviours
+
+```
+</script>
+</section>
+<section data-markdown>
+<script type="text/template">
+```javascript
+var test = new Meteor.Collection("test");
+
+// add a created_at timestamp when inserted
+// and update updated_at timestamp with every document edit
+test.timestampable();
+```
+```javascript
+// add a field that increments with
+// every new document that is being inserts
+test.autoIncrementable('fieldName', 2);
+```
+```javascript
+// don't remove documents, but mark them deleted
+test.softRemovable();
+```
+```javascript
+// log the history of all manipulations of several field
+test.trackable(['field1', 'field2']);
+```
+</script>
+</section>
+</section>
+
+
+<section>
+<section>
+          <h1>Thanks</h1>
+          <br/><br/>
+          <h3>Building large scale meteor apps</h3>
+          <h4>How <i>we</i> are doing it</h4>
+          <br/><br/>
+          <p>http://meteor.redandivory.com/</p>
+          <p>
+            <small>Created by <a href="http://redandivory.com">Pieter Soudan</a> / <a href="http://twitter.com/sewdn">@Sewdn</a></small>
+            <br/>
+            <small>Presented 11th of february on <a href="http://www.meetup.com/Meteor-Antwerp/events/162813252/">Meteor Meetup Antwerp</a></small>
+          </p>
+        </section>
+</section>
+
+
+      </div>
+
+    </div>
+
+    <script src="lib/js/head.min.js"></script>
+    <script src="js/reveal.min.js"></script>
+
+    <script>
+
+      // Full list of configuration options available here:
+      // https://github.com/hakimel/reveal.js#configuration
+      Reveal.initialize({
+        controls: true,
+        progress: true,
+        history: true,
+        center: true,
+
+        slideNumber: true,
+
+        width: 1200,
+        height: 860,
+
+        theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+        transition: Reveal.getQueryHash().transition || 'concave', // default/cube/page/concave/zoom/linear/fade/none
+
+        // Parallax scrolling
+        //parallaxBackgroundImage: 'http://upload.wikimedia.org/wikipedia/commons/b/b2/ESO-_Stellar_Cluster_NGC_2093_in_the_LMC-phot-34g-04-fullres.jpg',
+        //parallaxBackgroundSize: '2100px 900px',
+
+        // Optional libraries used to extend on reveal.js
+        dependencies: [
+          { src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+          { src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+          { src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+          { src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+          { src: 'plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+          { src: 'plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }
+        ]
+      });
+
+    </script>
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-820083-20', 'redandivory.com');
+      ga('send', 'pageview');
+
+    </script>
+  </body>
+</html>
